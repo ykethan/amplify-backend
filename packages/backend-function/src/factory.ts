@@ -1,4 +1,10 @@
 import {
+  FunctionOutput,
+  functionOutputKey,
+} from '@aws-amplify/backend-output-schemas';
+import { AttributionMetadataStorage } from '@aws-amplify/backend-output-storage';
+import { AmplifyUserError, TagName } from '@aws-amplify/platform-core';
+import {
   BackendOutputStorageStrategy,
   BackendSecret,
   BackendSecretResolver,
@@ -12,28 +18,22 @@ import {
   ResourceProvider,
   SsmEnvironmentEntry,
 } from '@aws-amplify/plugin-types';
-import { Construct } from 'constructs';
-import { NodejsFunction, OutputFormat } from 'aws-cdk-lib/aws-lambda-nodejs';
-import * as path from 'path';
-import { getCallerDirectory } from './get_caller_directory.js';
 import { Duration, Stack, Tags } from 'aws-cdk-lib';
-import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { createRequire } from 'module';
-import { FunctionEnvironmentTranslator } from './function_env_translator.js';
-import { Policy } from 'aws-cdk-lib/aws-iam';
-import { readFileSync } from 'fs';
-import { EOL } from 'os';
-import {
-  FunctionOutput,
-  functionOutputKey,
-} from '@aws-amplify/backend-output-schemas';
-import { FunctionEnvironmentTypeGenerator } from './function_env_type_generator.js';
-import { AttributionMetadataStorage } from '@aws-amplify/backend-output-storage';
-import { fileURLToPath } from 'node:url';
-import { AmplifyUserError, TagName } from '@aws-amplify/platform-core';
-import { convertFunctionSchedulesToRuleSchedules } from './schedule_parser.js';
-import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { Rule } from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { Policy } from 'aws-cdk-lib/aws-iam';
+import { CfnFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction, OutputFormat } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Construct } from 'constructs';
+import { readFileSync } from 'fs';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'node:url';
+import { EOL } from 'os';
+import * as path from 'path';
+import { FunctionEnvironmentTranslator } from './function_env_translator.js';
+import { FunctionEnvironmentTypeGenerator } from './function_env_type_generator.js';
+import { getCallerDirectory } from './get_caller_directory.js';
+import { convertFunctionSchedulesToRuleSchedules } from './schedule_parser.js';
 
 const functionStackType = 'function-Lambda';
 
@@ -118,7 +118,7 @@ export type FunctionProps = {
    * @example
    * schedule: "every week"
    * @example
-   * schedule: "0 9 * * 2" // every Monday at 9am
+   * schedule: "0 9 ? * 2 *" // every Monday at 9am
    */
   schedule?: FunctionSchedule | FunctionSchedule[];
 };
