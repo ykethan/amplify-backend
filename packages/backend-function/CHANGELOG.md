@@ -1,5 +1,11 @@
 # @aws-amplify/backend-function
 
+## 1.8.0
+
+### Minor Changes
+
+- fix duplicate generated env variable
+
 ## 1.7.1
 
 ### Patch Changes
