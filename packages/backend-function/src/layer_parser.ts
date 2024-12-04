@@ -5,7 +5,7 @@ import { AmplifyUserError } from '@aws-amplify/platform-core';
  */
 export class FunctionLayerArnParser {
   private arnPattern = new RegExp(
-    'arn:[a-zA-Z0-9-]+:lambda:([a-zA-Z0-9-]+|<region>):([0-9]{12}|<account>):layer:[a-zA-Z0-9-_]+:[0-9]+'
+    'arn:[a-zA-Z0-9-]+:lambda:([a-zA-Z0-9-]+|<region>):([0-9]{12}|<account-id>):layer:[a-zA-Z0-9-_]+:[0-9]+'
   );
 
   /**

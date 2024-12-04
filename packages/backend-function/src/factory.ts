@@ -420,7 +420,7 @@ class FunctionGenerator implements ConstructContainerEntryGenerator {
         // Replace placeholders with actual values
         const resolvedArn = arn
           .replace(/<region>/g, stack.region)
-          .replace(/<account>/g, stack.account);
+          .replace(/<account-id>/g, stack.account);
 
         return LayerVersion.fromLayerVersionArn(
           scope,

@@ -187,7 +187,7 @@ void describe('AmplifyFunctionFactory - Layers', () => {
 
   void it('resolves layer ARN with region and account placeholders', () => {
     const placeholderLayerArn =
-      'arn:aws:lambda:<region>:<account>:layer:my-layer:1';
+      'arn:aws:lambda:<region>:<account-id>:layer:my-layer:1';
     const functionFactory = defineFunction({
       entry: './test-assets/default-lambda/handler.ts',
       layers: {
