@@ -11,11 +11,11 @@ import {
 } from '@aws-amplify/plugin-types';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import fsp from 'fs/promises';
 import assert from 'node:assert';
+import path from 'node:path';
 import { after, beforeEach, describe, it } from 'node:test';
 import { defineFunction } from './factory.js';
-import path from 'node:path';
-import fsp from 'fs/promises';
 
 const createStackAndSetContext = (): Stack => {
   const app = new App();
@@ -182,6 +182,38 @@ void describe('AmplifyFunctionFactory - Layers', () => {
     template.hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Layers: [duplicateArn],
+    });
+  });
+
+  void it('resolves layer ARN with region and account placeholders', () => {
+    const placeholderLayerArn =
+      'arn:aws:lambda:<region>:<account>:layer:my-layer:1';
+    const functionFactory = defineFunction({
+      entry: './test-assets/default-lambda/handler.ts',
+      layers: {
+        'my-layer': placeholderLayerArn,
+      },
+    });
+    const lambda = functionFactory.getInstance(getInstanceProps);
+    const template = Template.fromStack(Stack.of(lambda.resources.lambda));
+
+    template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'index.handler',
+      Layers: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:lambda:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':layer:my-layer:1',
+            ],
+          ],
+        },
+      ],
     });
   });
 });

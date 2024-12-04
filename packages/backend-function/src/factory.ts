@@ -46,8 +46,8 @@ import * as path from 'path';
 import { FunctionEnvironmentTranslator } from './function_env_translator.js';
 import { FunctionEnvironmentTypeGenerator } from './function_env_type_generator.js';
 import { FunctionLayerArnParser } from './layer_parser.js';
-import { convertFunctionSchedulesToRuleSchedules } from './schedule_parser.js';
 import { convertLoggingOptionsToCDK } from './logging_options_parser.js';
+import { convertFunctionSchedulesToRuleSchedules } from './schedule_parser.js';
 
 const functionStackType = 'function-Lambda';
 
@@ -413,13 +413,21 @@ class FunctionGenerator implements ConstructContainerEntryGenerator {
     scope,
     backendSecretResolver,
   }: GenerateContainerEntryProps) => {
+    const stack = Stack.of(scope);
     // resolve layers to LayerVersion objects for the NodejsFunction constructor using the scope.
-    const resolvedLayers = Object.entries(this.props.layers).map(([key, arn]) =>
-      LayerVersion.fromLayerVersionArn(
-        scope,
-        `${this.props.name}-${key}-layer`,
-        arn
-      )
+    const resolvedLayers = Object.entries(this.props.layers).map(
+      ([key, arn]) => {
+        // Replace placeholders with actual values
+        const resolvedArn = arn
+          .replace(/<region>/g, stack.region)
+          .replace(/<account>/g, stack.account);
+
+        return LayerVersion.fromLayerVersionArn(
+          scope,
+          `${this.props.name}-${key}-layer`,
+          resolvedArn
+        );
+      }
     );
 
     return new AmplifyFunction(
